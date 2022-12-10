@@ -7,7 +7,11 @@ export const convertToJsonSchema = (s) => {
     const props = {};
     if (statement.children) {
       const properties = {}
+      const required = [];
       statement.children.forEach((child) => {
+        if (!child.nameNullable) {
+          required.push(child.name);
+        }
         properties[child.name] = convert(child)
       })
       const isArray = statement.childrenBracket === '[';
@@ -21,10 +25,12 @@ export const convertToJsonSchema = (s) => {
 
           props['items'] = {
             type: 'object',
+            required,
             properties,
           }
         }
       } else {
+        props['required'] = required;
         props['properties'] = properties;
       }
     } else {

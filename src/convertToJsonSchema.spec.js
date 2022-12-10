@@ -8,6 +8,7 @@ describe('In convert to json schema', () => {
   })
   test('convert object', () => {
     expect(convertToJsonSchema('{name: string}')).toEqual({type: 'object',
+      required: ['name'],
       properties: {
         'name': {type: 'string'},
       }
@@ -29,6 +30,7 @@ describe('In convert to json schema', () => {
     }
     `)).toEqual({
       type: 'object',
+      required: ['name', 'email', 'children', 'arrayNumber'],
       properties: {
         'name': {type: 'string'},
         'email': {type: 'string', format: 'email'},
@@ -37,6 +39,7 @@ describe('In convert to json schema', () => {
           type: 'array',
           items: {
             type: 'object',
+            required: ['name'],
             properties: {
               'name': {type: 'string'},
               'age': {nullable: true, type: 'number'},
@@ -46,6 +49,7 @@ describe('In convert to json schema', () => {
         'data': {
           type: 'object',
           nullable: true,
+          required: ['count'],
           properties: {
             'count': {type: 'number'},
           }
