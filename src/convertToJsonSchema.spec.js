@@ -1,7 +1,17 @@
 import {convertToJsonSchema} from "./convertToJsonSchema.js";
 
 describe('In convert to json schema', () => {
+  test('convert type', () => {
+    expect(convertToJsonSchema(':string')).toEqual({type: 'string',  })
+    expect(convertToJsonSchema(': number')).toEqual({type: 'number',  })
+    expect(convertToJsonSchema('{}')).toEqual({type: 'object',  })
+  })
   test('convert object', () => {
+    expect(convertToJsonSchema('{name: string}')).toEqual({type: 'object',
+      properties: {
+        'name': {type: 'string'},
+      }
+    })
 
     expect(convertToJsonSchema(`
     {
