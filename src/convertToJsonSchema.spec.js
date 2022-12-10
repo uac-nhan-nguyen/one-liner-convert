@@ -4,7 +4,7 @@ describe('In convert to json schema', () => {
   test('convert type', () => {
     expect(convertToJsonSchema(':string')).toEqual({type: 'string',  })
     expect(convertToJsonSchema(': number')).toEqual({type: 'number',  })
-    expect(convertToJsonSchema('{}')).toEqual({type: 'object',  })
+    expect(convertToJsonSchema('{}')).toEqual({type: 'object', required: [], properties: {} })
   })
   test('convert object', () => {
     expect(convertToJsonSchema('{name: string}')).toEqual({type: 'object',
