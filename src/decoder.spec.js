@@ -11,7 +11,7 @@ describe('In decoder utilities', () => {
     }
     `)).toEqual([';', '{', ';', 'name', ':', 'type', ';', '}', ';'])
     expect(decompose('name : type option(value) -f --flag')).toEqual(['name', ':', 'type', 'option(value)', '-f', '--flag'])
-    expect(decompose('name option(value)')).toEqual(['name',  'option(value)'])
+    expect(decompose('name option(value)')).toEqual(['name', 'option(value)'])
   })
 })
 
@@ -113,7 +113,7 @@ describe('In decoder', () => {
   test('nullable', () => {
     expect(decode(`nullable?: string`)).toEqual([{name: 'nullable', nameNullable: true, type: 'string'}])
     expect(decode(`not: string?`)).toEqual([{name: 'not', type: 'string', typeNullable: true}])
-    expect(decode(`not: string option() ?`)).toEqual([{name: 'not', type: 'string', options: {'option': ""} }])
+    expect(decode(`not: string option() ?`)).toEqual([{name: 'not', type: 'string', options: {'option': ""}}])
   })
 
   test('whole example', () => {
@@ -139,6 +139,40 @@ describe('In decoder', () => {
         {
           name: 'age', type: 'number', nameNullable: true
         }
+      ]
+    }])
+  })
+})
+
+describe('Found bugs when', () => {
+  test('array before object', () => {
+    expect(decode(`
+    {
+      i1: []
+      i2: string
+    }`)).toEqual([{
+      childrenBracket: '{',
+      children: [
+        {name: 'i1', childrenBracket: '[', children: []},
+        {name: 'i2', type: 'string'},
+      ]
+    }])
+  })
+
+  test('array before object', () => {
+    expect(decode(`
+    {
+      i1: [
+        name: string
+      ]
+    }`)).toEqual([{
+      childrenBracket: '{',
+      children: [
+        {
+          name: 'i1', childrenBracket: '[', children: [
+            {name: 'name', type: 'string'}
+          ]
+        },
       ]
     }])
   })

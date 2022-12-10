@@ -16,12 +16,15 @@ describe('In convert to json schema', () => {
     expect(convertToJsonSchema(`
     {
       name: string
-      email: string format=email
+      email: string format(email)
       phone?: string 
       children: [
         name: string
         age?: number
       ]
+      data?: {
+        count: number
+      }
       arrayNumber: number []
     }
     `)).toEqual({
@@ -34,8 +37,17 @@ describe('In convert to json schema', () => {
           type: 'array',
           items: {
             type: 'object',
-            'name': {type: 'string'},
-            'age': {nullable: true, type: 'number'},
+            properties: {
+              'name': {type: 'string'},
+              'age': {nullable: true, type: 'number'},
+            },
+          }
+        },
+        'data': {
+          type: 'object',
+          nullable: true,
+          properties: {
+            'count': {type: 'number'},
           }
         },
         'arrayNumber': {

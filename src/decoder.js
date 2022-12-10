@@ -11,10 +11,10 @@ export const decode = (s) => {
     let child = {};
     children.push(child);
 
-    let nextIsType = false;
+    let nextIsType = -10;
     let i = 0
-    let justName = -1;
-    let justType = -1;
+    let justName = -10;
+    let justType = -10;
 
     /// loop
     for (; i < a.length; i++) {
@@ -27,9 +27,8 @@ export const decode = (s) => {
         if (child['options'] == null) child['options'] = {};
         child['options'][option[1]] = option[2]
       } else if (isName(c)) {
-        if (nextIsType) {
+        if (nextIsType === i - 1) {
           child['type'] = c
-          nextIsType = false
           justType = i
         } else {
           child['name'] = c
@@ -43,9 +42,8 @@ export const decode = (s) => {
         }
 
       } else if (c === ':') {
-        nextIsType = true
+        nextIsType = i
       } else if (c === ';') {
-        nextIsType = false
         if (Object.entries(child).length > 0) {
           child = {};
           children.push(child)
@@ -53,7 +51,7 @@ export const decode = (s) => {
       } else if (c === '{' || c === '[') {
         child['childrenBracket'] = c;
         const [_children, skip] = _decode(a.slice(i + 1));
-        i += skip
+        i += skip + 1
         child['children'] = _children;
       } else if (c === '}' || c === ']') {
         break;
