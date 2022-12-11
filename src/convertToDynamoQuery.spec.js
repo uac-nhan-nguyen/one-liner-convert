@@ -31,6 +31,19 @@ describe('In convert to dynamo query', () => {
       ExpressionAttributeValues: {':PK': 'Entity#New', ":SK": '#'},
     })
   })
+
+  test('options', () => {
+    expect(q.createQuery(`Entity pk(LEARNER#) limit=100 --rcu --reverse`)).toEqual({
+      TableName: 'table-name',
+      Limit: 100,
+      ScanIndexForward: false,
+      ReturnConsumedCapacity: "TOTAL",
+      KeyConditionExpression: '#PK = :PK',
+      ExpressionAttributeNames: {'#PK': 'PK'},
+      ExpressionAttributeValues: {':PK': 'LEARNER#'},
+    })
+  })
+
   test('query gsi', () => {
     expect(q.createQuery(`Entity gsi=1 status=New`)).toEqual({
       TableName: 'table-name',

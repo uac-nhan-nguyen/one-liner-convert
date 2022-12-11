@@ -17,7 +17,8 @@ export class DynamoQuery {
 
   createQuery(s) {
     const [c] = decode(s);
-    const {gsi, pk, id, begins_with, sk, status} = c.options ?? {};
+    const {gsi, pk, id, begins_with, sk, status, limit} = c.options ?? {};
+
     const entity = c.name;
 
     const ans = {
@@ -30,17 +31,26 @@ export class DynamoQuery {
     ans.KeyConditionExpression = `#${PK} = :${PK}`
     ans.ExpressionAttributeNames = {[`#${PK}`]: PK}
 
-    if (pk){
+    if (pk) {
       ans.ExpressionAttributeValues = {[`:${PK}`]: `${pk}`}
-    }
-    else if (id) {
+    } else if (id) {
       ans.ExpressionAttributeValues = {[`:${PK}`]: `${entity}#${id}`}
-    }
-    else if (status) {
+    } else if (status) {
       ans.ExpressionAttributeValues = {[`:${PK}`]: `${entity}#${status}`}
-    }
-    else {
+    } else {
       ans.ExpressionAttributeValues = {[`:${PK}`]: `${entity}`}
+    }
+
+    if (limit) {
+      ans.Limit = parseInt(limit);
+    }
+
+    if (c.flags?.includes('--rcu')) {
+      ans.ScanIndexForward = false;
+    }
+
+    if (c.flags?.includes('--reverse')) {
+      ans.ReturnConsumedCapacity = "TOTAL";
     }
 
 
