@@ -49,7 +49,7 @@ export class DynamoQuery {
       ans.ScanIndexForward = false;
     }
 
-    if (c.flags?.includes('--reverse')) {
+    if (c.flags?.includes('--inverse')) {
       ans.ReturnConsumedCapacity = "TOTAL";
     }
 

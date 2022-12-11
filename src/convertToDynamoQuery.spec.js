@@ -33,7 +33,7 @@ describe('In convert to dynamo query', () => {
   })
 
   test('options', () => {
-    expect(q.createQuery(`Entity pk(LEARNER#) limit=100 --rcu --reverse`)).toEqual({
+    expect(q.createQuery(`Entity pk(LEARNER#) limit=100 --rcu --inverse`)).toEqual({
       TableName: 'table-name',
       Limit: 100,
       ScanIndexForward: false,
