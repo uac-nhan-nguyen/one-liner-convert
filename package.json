@@ -1,6 +1,6 @@
 {
   "name": "one-liner-convert",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Convert one line declarative codes to other format like json schema",
   "main": "src/index.js",
   "repository": "git@github.com:uac-nhan-nguyen/one-liner-convert.git",
