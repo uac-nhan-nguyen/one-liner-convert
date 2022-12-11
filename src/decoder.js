@@ -70,13 +70,13 @@ const isName = (s) => {
   return s.match(/^[\w-]+$/) != null;
 }
 
-const matchOption = (s) => s.match(/(\w+)\((\S*)\)/)
+const matchOption = (s) => s.match(/(\w+)\((\S*)\)/) ?? s.match(/(\w+)=(\w*)/)
 
 const isFlag = (s) => s.match(/^(-|--)\w+/) != null
 
 
 export const decompose = (s) => {
-  const m = [...mergeSpaces(s).matchAll(/(\w+)\((\S*)\)|[\w-]+|\?|:|{|}|;|\[|]/g)];
+  const m = [...mergeSpaces(s).matchAll(/(\w+)\((\S*)\)|(\w+)=(\w*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
   return m.map((i) => i[0]);
 }
 

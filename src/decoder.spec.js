@@ -102,6 +102,7 @@ describe('In decoder', () => {
     expect(decode(`o1(1) o1(2) o2(3) o4()`)).toEqual([{
       options: {'o1': '2', 'o2': '3', 'o4': ''}
     }])
+    expect(decode(`o=2`)).toEqual([{options: {'o': '2'}}])
   })
 
   test('flags', () => {

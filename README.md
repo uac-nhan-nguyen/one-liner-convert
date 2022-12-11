@@ -2,7 +2,7 @@
 
 Convert one line declarative codes to other format like json schema
 
-## JSON schema
+## Convert to JSON schema
 
 ```
 IN:
