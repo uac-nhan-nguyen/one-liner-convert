@@ -46,11 +46,11 @@ export class DynamoQuery {
     }
 
     if (c.flags?.includes('--rcu')) {
-      ans.ScanIndexForward = false;
+      ans.ReturnConsumedCapacity = "TOTAL";
     }
 
     if (c.flags?.includes('--inverse')) {
-      ans.ReturnConsumedCapacity = "TOTAL";
+      ans.ScanIndexForward = false;
     }
 
 
