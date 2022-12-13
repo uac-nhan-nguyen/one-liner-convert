@@ -1,4 +1,4 @@
-import {decode, decompose, mergeSpaces} from "./decoder.js";
+import {decode, decompose} from "./decoder.js";
 
 describe('In decoder utilities', () => {
   test('decompose generals', () => {
@@ -11,7 +11,8 @@ describe('In decoder utilities', () => {
     }
     `)).toEqual([';', '{', ';', 'name', ':', 'type', ';', '}', ';'])
     expect(decompose('name : type option(value) -f --flag')).toEqual(['name', ':', 'type', 'option(value)', '-f', '--flag'])
-    expect(decompose('name option(value)')).toEqual(['name', 'option(value)'])
+    expect(decompose('name option(value whitespace)')).toEqual(['name', 'option(value whitespace)'])
+    expect(decompose('name array[1,Name, 3]')).toEqual(['name', 'array[1,Name, 3]'])
   })
 })
 
@@ -96,13 +97,21 @@ describe('In decoder', () => {
     expect(decode(`option(value)`)).toEqual([{
       options: {'option': 'value'}
     }])
-    expect(decode(`option((){}^/[?:]/$)`)).toEqual([{
-      options: {'option': '(){}^/[?:]/$'}
+    expect(decode(`option({}^/[?:]/$)`)).toEqual([{
+      options: {'option': '{}^/[?:]/$'}
     }])
     expect(decode(`o1(1) o1(2) o2(3) o4()`)).toEqual([{
       options: {'o1': '2', 'o2': '3', 'o4': ''}
     }])
     expect(decode(`o=2`)).toEqual([{options: {'o': '2'}}])
+  })
+
+  test('array of strings', () => {
+    expect(decode('statuses[New, Processing,Done]')).toEqual([{
+      arrays: {
+        'statuses': ['New', ' Processing', 'Done']
+      }
+    }])
   })
 
   test('flags', () => {

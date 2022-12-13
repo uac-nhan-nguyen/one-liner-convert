@@ -20,12 +20,17 @@ export const decode = (s) => {
     for (; i < a.length; i++) {
       const c = a[i];
       const option = matchOption(c)
+      const array = matchArray(c)
       if (isFlag(c)) {
         if (child['flags'] == null) child['flags'] = [];
         child['flags'].push(c)
       } else if (option != null) {
         if (child['options'] == null) child['options'] = {};
         child['options'][option[1]] = option[2]
+      } else if (array != null) {
+        if (child['arrays'] == null) child['arrays'] = {};
+        child['arrays'][array[1]] = array[2].split(',')
+
       } else if (isName(c)) {
         if (nextIsType === i - 1) {
           child['type'] = c
@@ -70,13 +75,17 @@ const isName = (s) => {
   return s.match(/^[\w-]+$/) != null;
 }
 
-const matchOption = (s) => s.match(/(\w+)\((\S*)\)/) ?? s.match(/(\w+)=(\w*)/)
+const optionRegex = /(\w+)\(([^\n)]*)\)/
+const arrayRegex = /(\w+)\[([^\n\]]*)]/
+
+const matchOption = (s) => s.match(optionRegex) ?? s.match(/(\w+)=(\w*)/)
+const matchArray = (s) => s.match(arrayRegex) ?? s.match(/(\w+)=(\w*)/)
 
 const isFlag = (s) => s.match(/^(-|--)\w+/) != null
 
 
 export const decompose = (s) => {
-  const m = [...mergeSpaces(s).matchAll(/(\w+)\((\S*)\)|(\w+)=(\w*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
+  const m = [...mergeSpaces(s).matchAll(/(\w+)\(([^\n)]*)\)|(\w+)\[([^\n\]]*)]|(\w+)=(\w*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
   return m.map((i) => i[0]);
 }
 
