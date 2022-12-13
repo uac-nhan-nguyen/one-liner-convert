@@ -19,7 +19,7 @@ export class DynamoQuery {
     const [c] = decode(s);
     const {gsi, pk, id, begins_with, sk, status, limit} = c.options ?? {};
 
-    const entity = c.name;
+    const entity = c.type;
 
     const ans = {
       TableName: this.#tableName,

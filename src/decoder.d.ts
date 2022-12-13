@@ -6,6 +6,7 @@ type Statement = {
 
   flags?: (`-${string}` | `--${string}`)[],
   options?: { [k: string]: string },
+  arrays?: { [k: string]: string[] },
   nameNullable?: true,
   typeNullable?: true,
 }

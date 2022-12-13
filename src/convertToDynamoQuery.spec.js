@@ -3,28 +3,28 @@ import {DynamoQuery} from "./convertToDynamoQuery.js";
 describe('In convert to dynamo query', () => {
   const q = new DynamoQuery({tableName: 'table-name'})
   test('query PK', () => {
-    expect(q.createQuery(`Entity id=pk1`)).toEqual({
+    expect(q.createQuery(`:Entity id=pk1`)).toEqual({
       TableName: 'table-name',
       KeyConditionExpression: '#PK = :PK',
       ExpressionAttributeNames: {'#PK': 'PK'},
       ExpressionAttributeValues: {':PK': 'Entity#pk1'},
     })
 
-    expect(q.createQuery(`Entity pk(LEARNER#)`)).toEqual({
+    expect(q.createQuery(`pk(LEARNER#)`)).toEqual({
       TableName: 'table-name',
       KeyConditionExpression: '#PK = :PK',
       ExpressionAttributeNames: {'#PK': 'PK'},
       ExpressionAttributeValues: {':PK': 'LEARNER#'},
     })
 
-    expect(q.createQuery(`Entity id=New begins_with(Coder#)`)).toEqual({
+    expect(q.createQuery(`:Entity id=New begins_with(Coder#)`)).toEqual({
       TableName: 'table-name',
       KeyConditionExpression: '#PK = :PK AND begins_with(#SK, :SK)',
       ExpressionAttributeNames: {'#PK': 'PK','#SK': 'SK'},
       ExpressionAttributeValues: {':PK': 'Entity#New', ":SK": 'Coder#'},
     })
 
-    expect(q.createQuery(`Entity id=New sk(#)`)).toEqual({
+    expect(q.createQuery(`id=New :Entity  sk(#)`)).toEqual({
       TableName: 'table-name',
       KeyConditionExpression: '#PK = :PK AND #SK = :SK',
       ExpressionAttributeNames: {'#PK': 'PK','#SK': 'SK'},
@@ -33,7 +33,7 @@ describe('In convert to dynamo query', () => {
   })
 
   test('options', () => {
-    expect(q.createQuery(`Entity pk(LEARNER#) limit=100 --inverse`)).toEqual({
+    expect(q.createQuery(`:Entity pk(LEARNER#) limit=100 --inverse`)).toEqual({
       TableName: 'table-name',
       Limit: 100,
       ScanIndexForward: false,
@@ -42,7 +42,7 @@ describe('In convert to dynamo query', () => {
       ExpressionAttributeValues: {':PK': 'LEARNER#'},
     })
 
-    expect(q.createQuery(`Entity pk(LEARNER#) limit=100 --rcu --inverse`)).toEqual({
+    expect(q.createQuery(`pk(LEARNER#) limit=100 --rcu --inverse`)).toEqual({
       TableName: 'table-name',
       Limit: 100,
       ScanIndexForward: false,
@@ -54,7 +54,7 @@ describe('In convert to dynamo query', () => {
   })
 
   test('query gsi', () => {
-    expect(q.createQuery(`Entity gsi=1 status=New`)).toEqual({
+    expect(q.createQuery(`:Entity gsi=1 status=New`)).toEqual({
       TableName: 'table-name',
       IndexName: 'gsi1-index',
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -62,7 +62,7 @@ describe('In convert to dynamo query', () => {
       ExpressionAttributeValues: {':GSI1PK': 'Entity#New'},
     })
 
-    expect(q.createQuery(`Entity gsi=1`)).toEqual({
+    expect(q.createQuery(`:Entity gsi=1`)).toEqual({
       TableName: 'table-name',
       IndexName: 'gsi1-index',
       KeyConditionExpression: '#GSI1PK = :GSI1PK',
@@ -70,7 +70,7 @@ describe('In convert to dynamo query', () => {
       ExpressionAttributeValues: {':GSI1PK': 'Entity'},
     })
 
-    expect(q.createQuery(`Entity gsi=1 status=New begins_with(Coder#)`)).toEqual({
+    expect(q.createQuery(`:Entity gsi=1 status=New begins_with(Coder#)`)).toEqual({
       TableName: 'table-name',
       IndexName: 'gsi1-index',
       KeyConditionExpression: '#GSI1PK = :GSI1PK AND begins_with(#GSI1SK, :GSI1SK)',
