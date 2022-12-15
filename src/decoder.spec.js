@@ -39,14 +39,14 @@ describe('In decoder', () => {
   test('parent name and type', () => {
     expect(decode(`
     parent: object {
-      name: type
+      name: type item=$item
       name: type
     }
     `)).toEqual([{
       name: 'parent', type: 'object',
       childrenBracket: '{',
       children: [
-        {name: 'name', type: 'type'},
+        {name: 'name', type: 'type', options: {item: '$item'}},
         {name: 'name', type: 'type'},
       ]
     }])
@@ -103,7 +103,7 @@ describe('In decoder', () => {
     expect(decode(`o1(1) o1(2) o2(3) o4()`)).toEqual([{
       options: {'o1': '2', 'o2': '3', 'o4': ''}
     }])
-    expect(decode(`o=2`)).toEqual([{options: {'o': '2'}}])
+    expect(decode(`o=2 item=$item`)).toEqual([{options: {'o': '2', 'item': '$item'}}])
   })
 
   test('array of strings', () => {

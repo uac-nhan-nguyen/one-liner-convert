@@ -78,14 +78,14 @@ const isName = (s) => {
 const optionRegex = /(\w+)\(([^\n)]*)\)/
 const arrayRegex = /(\w+)\[([^\n\]]*)]/
 
-const matchOption = (s) => s.match(optionRegex) ?? s.match(/(\w+)=(\w*)/)
-const matchArray = (s) => s.match(arrayRegex) ?? s.match(/(\w+)=(\w*)/)
+const matchOption = (s) => s.match(optionRegex) ?? s.match(/(\w+)=([^\s;]*)/)
+const matchArray = (s) => s.match(arrayRegex)
 
 const isFlag = (s) => s.match(/^(-|--)\w+/) != null
 
 
 export const decompose = (s) => {
-  const m = [...mergeSpaces(s).matchAll(/(\w+)\(([^\n)]*)\)|(\w+)\[([^\n\]]*)]|(\w+)=(\w*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
+  const m = [...mergeSpaces(s).matchAll(/(\w+)\(([^\n)]*)\)|(\w+)\[([^\n\]]*)]|(\w+)=([^\s;]*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
   return m.map((i) => i[0]);
 }
 
