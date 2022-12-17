@@ -186,4 +186,8 @@ describe('Found bugs when', () => {
       ]
     }])
   })
+
+  test('empty string', () => {
+    expect(decode('')).toEqual([])
+  })
 })

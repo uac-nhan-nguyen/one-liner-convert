@@ -16,12 +16,13 @@ export class DynamoQuery {
   }
 
   create(s, {props, timestamp} = {}) {
+    if (!s) return null;
     const [c] = decode(s);
+    if (c == null) return null;
     return this.#create(c, {props, timestamp});
   }
 
   #create(c, {props, timestamp} = {}) {
-    console.log(c)
     if (c.children && c.children.length > 0 && c.childrenBracket === '[') {
       const ans = [];
 
@@ -45,6 +46,8 @@ export class DynamoQuery {
       return this.#createPut(c, {props, timestamp})
     } else if (c.name === 'update') {
       return this.#createUpdate(c, {props, timestamp})
+    } else if (c.name === 'delete') {
+      return this.#createDelete(c);
     }
   }
 
@@ -93,6 +96,26 @@ export class DynamoQuery {
     return this.#createUpdate(c, {props, timestamp});
   }
 
+  #createDelete(c) {
+    const entity = c.type;
+    const {id} = c.options ?? {};
+
+    const ans = {}
+
+    if (entity && id) {
+      ans['Key'] = {
+        PK: `${entity}#${id}`,
+        SK: '#'
+      }
+    }
+
+
+    return {
+      TableName: this.#tableName,
+      Key: ans.Key,
+    };
+  }
+
   #createUpdate(c, {props, timestamp}) {
     const now = timestamp ?? Date.now();
     const entity = c.type;
@@ -103,7 +126,6 @@ export class DynamoQuery {
     }
 
     const ans = {
-      TableName: this.#tableName,
       ExpressionAttributeNames: {
         '#updatedAt': 'updatedAt'
       },
@@ -130,9 +152,14 @@ export class DynamoQuery {
       }
     })
 
-    ans.UpdateExpression = buildUpdateExpression(updateExpressionParams)
 
-    return ans;
+    return {
+      TableName: this.#tableName,
+      Key: ans.Key,
+      UpdateExpression: buildUpdateExpression(updateExpressionParams),
+      ExpressionAttributeNames: ans.ExpressionAttributeNames,
+      ExpressionAttributeValues: ans.ExpressionAttributeValues,
+    };
   }
 
   createQuery(s) {

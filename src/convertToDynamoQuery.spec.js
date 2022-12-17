@@ -166,4 +166,10 @@ describe('DynamoConvert can convert lines of transaction, query, update', () => 
       ]
     });
   })
+
+  test('bugs', () => {
+    expect(q.create('')).toEqual(null)
+    expect(q.create(null)).toEqual(null)
+    expect(q.create(undefined)).toEqual(null)
+  })
 })
