@@ -20,6 +20,8 @@ export const decode = (s) => {
     for (; i < a.length; i++) {
       const c = a[i];
       const option = matchOption(c)
+      const equals = matchEquals(c)
+      const tilde = matchTilde(c)
       const array = matchArray(c)
       if (isFlag(c)) {
         if (child['flags'] == null) child['flags'] = [];
@@ -27,6 +29,12 @@ export const decode = (s) => {
       } else if (option != null) {
         if (child['options'] == null) child['options'] = {};
         child['options'][option[1]] = option[2]
+      } else if (equals != null) {
+        if (child['equals'] == null) child['equals'] = {};
+        child['equals'][equals[1]] = equals[2]
+      } else if (tilde != null) {
+        if (child['tildes'] == null) child['tildes'] = {};
+        child['tildes'][tilde[1]] = tilde[2]
       } else if (array != null) {
         if (child['arrays'] == null) child['arrays'] = {};
         child['arrays'][array[1]] = array[2].split(',')
@@ -75,17 +83,16 @@ const isName = (s) => {
   return s.match(/^[\w-]+$/) != null;
 }
 
-const optionRegex = /(\w+)\(([^\n)]*)\)/
-const arrayRegex = /(\w+)\[([^\n\]]*)]/
-
-const matchOption = (s) => s.match(optionRegex) ?? s.match(/(\w+)=([^\s;]*)/)
-const matchArray = (s) => s.match(arrayRegex)
+const matchOption = (s) => s.match(/(\w+)\(([^\n)]*)\)/)
+const matchEquals = (s) => s.match(/(\w+)=([^\s;]*)/)
+const matchTilde = (s) => s.match(/(\w+)~([^\s;]*)/)
+const matchArray = (s) => s.match(/(\w+)\[([^\n\]]*)]/)
 
 const isFlag = (s) => s.match(/^(-|--)\w+/) != null
 
 
 export const decompose = (s) => {
-  const m = [...mergeSpaces(s).matchAll(/(\w+)\(([^\n)]*)\)|(\w+)\[([^\n\]]*)]|(\w+)=([^\s;]*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
+  const m = [...mergeSpaces(s).matchAll(/(\w+)\(([^\n)]*)\)|(\w+)\[([^\n\]]*)]|(\w+)=([^\s;]*)|(\w+)~([^\s;]*)|[\w-]+|\?|:|{|}|;|\[|]/g)];
   return m.map((i) => i[0]);
 }
 

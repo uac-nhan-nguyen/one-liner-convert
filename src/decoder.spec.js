@@ -10,7 +10,7 @@ describe('In decoder utilities', () => {
     name: type
     }
     `)).toEqual([';', '{', ';', 'name', ':', 'type', ';', '}', ';'])
-    expect(decompose('name : type option(value) -f --flag')).toEqual(['name', ':', 'type', 'option(value)', '-f', '--flag'])
+    expect(decompose('name : type option(value) -f --flag begins~with')).toEqual(['name', ':', 'type', 'option(value)', '-f', '--flag', 'begins~with'])
     expect(decompose('name option(value whitespace)')).toEqual(['name', 'option(value whitespace)'])
     expect(decompose('name array[1,Name, 3]')).toEqual(['name', 'array[1,Name, 3]'])
   })
@@ -46,7 +46,7 @@ describe('In decoder', () => {
       name: 'parent', type: 'object',
       childrenBracket: '{',
       children: [
-        {name: 'name', type: 'type', options: {item: '$item'}},
+        {name: 'name', type: 'type', equals: {item: '$item'}},
         {name: 'name', type: 'type'},
       ]
     }])
@@ -103,7 +103,14 @@ describe('In decoder', () => {
     expect(decode(`o1(1) o1(2) o2(3) o4()`)).toEqual([{
       options: {'o1': '2', 'o2': '3', 'o4': ''}
     }])
-    expect(decode(`o=2 item=$item`)).toEqual([{options: {'o': '2', 'item': '$item'}}])
+  })
+
+  test('equals', () => {
+    expect(decode(`o=2 item=$item`)).toEqual([{equals: {'o': '2', 'item': '$item'}}])
+  })
+
+  test('tildes', () => {
+    expect(decode(`o~2 item~$item`)).toEqual([{tildes: {'o': '2', 'item': '$item'}}])
   })
 
   test('array of strings', () => {

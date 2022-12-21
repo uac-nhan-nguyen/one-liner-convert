@@ -32,6 +32,7 @@ export class DynamoQuery {
           'put': 'Put',
           'update': 'Update',
           'delete': 'Delete',
+          'get': 'Get',
         }[child.name] ?? 'Unknown'
 
         ans.push({[key]: this.#create(child, {props, timestamp})})
@@ -48,12 +49,9 @@ export class DynamoQuery {
       return this.#createUpdate(c, {props, timestamp})
     } else if (c.name === 'delete') {
       return this.#createDelete(c);
+    } else if (c.name === 'get') {
+      return this.#createGet(c);
     }
-  }
-
-  createPut(s, {props, timestamp} = {}) {
-    const [c] = decode(s);
-    return this.#createPut(c, {props, timestamp});
   }
 
   #createPut(c, {props, timestamp}) {
@@ -88,12 +86,6 @@ export class DynamoQuery {
 
 
     return ans;
-  }
-
-
-  createUpdate(s, {props, timestamp}) {
-    const [c] = decode(s);
-    return this.#createUpdate(c, {props, timestamp});
   }
 
   #createDelete(c) {
@@ -162,13 +154,10 @@ export class DynamoQuery {
     };
   }
 
-  createQuery(s) {
-    const [c] = decode(s);
-    return this.#createQuery(c);
-  }
-
   #createQuery(c) {
-    const {gsi, pk, id, begins_with, sk, status, limit} = c.options ?? {};
+    const {status, limit} = c.options ?? {};
+    const {pk, sk, id, gsi} = c.equals ?? {}
+    const {sk: skT} = c.tildes ?? {}
 
     const entity = c.type;
 
@@ -205,10 +194,10 @@ export class DynamoQuery {
     }
 
 
-    if (begins_with) {
+    if (skT) {
       ans.KeyConditionExpression += ` AND begins_with(#${SK}, :${SK})`;
       ans.ExpressionAttributeNames[`#${SK}`] = SK
-      ans.ExpressionAttributeValues[`:${SK}`] = begins_with;
+      ans.ExpressionAttributeValues[`:${SK}`] = skT;
     }
 
     if (sk) {
@@ -219,7 +208,40 @@ export class DynamoQuery {
 
     return ans;
   }
+
+  #createGet(c) {
+    const {pk, sk} = c.equals ?? {};
+    return {
+      TableName: this.#tableName,
+      Key: {
+        PK: pk,
+        SK: sk,
+      },
+    }
+  }
+
+  createPut(s, {props, timestamp} = {}) {
+    const [c] = decode(s);
+    return this.#createPut(c, {props, timestamp});
+  }
+
+  createUpdate(s, {props, timestamp}) {
+    const [c] = decode(s);
+    return this.#createUpdate(c, {props, timestamp});
+  }
+
+  createQuery(s) {
+    const [c] = decode(s);
+    return this.#createQuery(c);
+  }
+
+  createGet(s) {
+    const [c] = decode(s);
+    return this.#createGet(c);
+  }
+
 }
+
 
 /**
  * helpers to build UpdateExpression
